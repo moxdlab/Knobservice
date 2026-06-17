@@ -84,7 +84,8 @@ sudo umount /dev/sdX*
 Now, time to write the image to the SD card. Use the following command to fill the sd card:
 
 ```bash
- sudo dd if=out/target/product/rpi4/RaspberryVanillaAOSP13-20260611-rpi4.img of=/dev/sdX bs=4M status=progress && sync 
+# Look what the name of you Image is and Replace the Xs with the correct name of the image
+ sudo dd if=out/target/product/rpi4/RaspberryVanillaAOSP13-XXXXXXXX-rpi4.img of=/dev/sdX bs=4M status=progress && sync 
 ```
 
 After the flashing process is complete, safely eject the SD card and insert it into your Raspberry Pi.
