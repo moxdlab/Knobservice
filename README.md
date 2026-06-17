@@ -16,8 +16,8 @@ To get the AOSP Sourcecode and the specific libraries for Raspberry Pi, use foll
 repo init -u https://android.googlesource.com/platform/manifest -b android-13.0.0_r75 --depth=1
 
 mkdir -p .repo/local_manifests && \
-curl -o .repo/local_manifests/manifest_brcm_rpi4.xml https://raw.githubusercontent.com/Luca-Brabender/Knobservice/DPAD/manifest_brcm_rpi4.xml && \
-curl -o .repo/local_manifests/remove_projects.xml https://raw.githubusercontent.com/Luca-Brabender/Knobservice/DPAD/remove_projects.xml
+curl -o .repo/local_manifests/manifest_brcm_rpi4.xml https://raw.githubusercontent.com/moxdlab/Knobservice/DPAD/manifest_brcm_rpi4.xml && \
+curl -o .repo/local_manifests/remove_projects.xml https://raw.githubusercontent.com/moxdlab/Knobservice/DPAD/remove_projects.xml
 
 repo sync
 ````
@@ -28,7 +28,7 @@ Depending on your internet connection, the download process may take several hou
 ## Setting up The Knobservice
 To implement the KnobService, use the following commands:
 ```text
-git clone -b DPAD https://github.com/Luca-Brabender/KnobService.git knob_clone
+git clone -b DPAD https://github.com/moxdlab/KnobService.git knob_clone
 
 mkdir packages/apps/KnobService
 
@@ -56,7 +56,7 @@ KnobService/
 From your source code directory, enter following command:
 
 ```text
-curl -L -o device/brcm/rpi4/aosp_rpi4_car.mk https://raw.githubusercontent.com/Luca-Brabender/KnobService/DPAD/aosp_rpi4_car.mk
+curl -L -o device/brcm/rpi4/aosp_rpi4_car.mk https://raw.githubusercontent.com/moxdlab/KnobService/DPAD/aosp_rpi4_car.mk
 ```
 
 ## Build Android Automotive
