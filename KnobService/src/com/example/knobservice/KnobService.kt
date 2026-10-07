@@ -40,6 +40,7 @@ import android.car.CarOccupantZoneManager
 import android.car.input.RotaryEvent
 import android.view.InputDevice
 import android.view.KeyCharacterMap
+import android.os.UserHandle
 
 class KnobService : Service() {
 
@@ -371,7 +372,7 @@ class KnobService : Service() {
                                 // 0, 1, 2 Finger -> Native AAOS Rotary Navigation (Vorwärts)
                                 0, 1, 2 -> injectRotaryNavigation(isForward = true)
                                 3 -> injectNudge(KeyEvent.KEYCODE_SYSTEM_NAVIGATION_DOWN)
-                                //4 -> sendMenuBroadcast(direction)
+                                4 -> sendMenuIntent(direction)
                                 5 -> injectNudge(KeyEvent.KEYCODE_BACK)
                             }
                         } else {
@@ -380,7 +381,7 @@ class KnobService : Service() {
                                 // 0, 1, 2 Finger -> Native AAOS Rotary Navigation (Rückwärts)
                                 0, 1, 2 -> injectRotaryNavigation(isForward = false)
                                 3 -> injectNudge(KeyEvent.KEYCODE_SYSTEM_NAVIGATION_UP)
-                                //4 -> sendMenuBroadcast(direction)
+                                4 -> sendMenuIntent(direction)
                                 5 -> injectNudge(KeyEvent.KEYCODE_BACK)
                             }
                         }
@@ -398,13 +399,47 @@ class KnobService : Service() {
         // 10 steht für INPUT_TYPE_ROTARY_NAVIGATION
         val inputType = CarInputManager.INPUT_TYPE_ROTARY_NAVIGATION 
         
-        // Im AOSP verlangt der RotaryEvent-Konstruktor oft ein Array für die Klick-Zeiten:
+        // Im AOSP verlangt der RotaryEvent-Konstru7ktor oft ein Array für die Klick-Zeiten:
         val uptimesForClicks = longArrayOf(uptime)
         val rotaryEvent = RotaryEvent(inputType, isForward, uptimesForClicks)
     
         carInputManager?.injectRotaryEvent(rotaryEvent, CarOccupantZoneManager.DISPLAY_TYPE_MAIN)
     }
-    
+
+    private fun sendMenuIntent(direction: String) {
+        try {
+            val intent = Intent().apply {
+                setClassName(
+                    "com.example.menuapp",
+                    "com.example.menuapp.MainActivity"
+                )
+                action = ACTION_KNOB_FOUR_FINGERS
+                putExtra(EXTRA_KNOB_DIRECTION, direction)
+                addFlags(
+                    Intent.FLAG_ACTIVITY_NEW_TASK or
+                            Intent.FLAG_ACTIVITY_SINGLE_TOP or
+                            Intent.FLAG_ACTIVITY_CLEAR_TOP
+                )
+            }
+
+            startActivityAsUser(
+                intent,
+                UserHandle.of(10)
+            )
+
+            Log.d(
+                "KnobService",
+                "4-Finger-Geste an MenuApp für User 10 gesendet: direction=$direction"
+            )
+        } catch (e: Exception) {
+            Log.e(
+                "KnobService",
+                "MenuApp konnte nicht gestartet werden",
+                e
+            )
+        }
+    }
+
     private fun injectNudge(keyCode: Int) {
     val manager = carInputManager
 
@@ -539,4 +574,12 @@ class KnobService : Service() {
     }
 
     override fun onBind(intent: Intent?) = null
+
+    companion object {
+        private const val ACTION_KNOB_FOUR_FINGERS =
+            "com.example.carappdrawer.ACTION_KNOB_FOUR_FINGERS"
+
+        private const val EXTRA_KNOB_DIRECTION =
+            "com.example.carappdrawer.EXTRA_KNOB_DIRECTION"
+    }
 }
